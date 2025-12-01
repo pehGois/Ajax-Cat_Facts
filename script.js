@@ -1,5 +1,11 @@
 const cardsGrid = document.getElementById('cardsGrid');
 const loading = document.getElementById('loading');
+const catModal = document.getElementById('catModal');
+const closeModal = document.getElementById('closeModal');
+const catImage = document.getElementById('catImage');
+const modalLoading = document.getElementById('modalLoading');
+const modalError = document.getElementById('modalError');
+
 let isLoading = false;
 let currentPage = 1;
 let hasMorePages = true;
@@ -20,8 +26,84 @@ function createCard(fact) {
         <div class="cat-emoji">${getRandomCatEmoji()}</div>
     `;
     
+    // Adiciona evento de clique no card
+    card.addEventListener('click', () => openModal());
+    
     return card;
 }
+
+function openModal() {
+    catModal.style.display = 'flex';
+    catImage.style.display = 'none';
+    modalLoading.style.display = 'block';
+    modalError.style.display = 'none';
+    
+    // Faz a requisição assíncrona para a Cat API
+    loadCatImage();
+}
+
+function loadCatImage() {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', 'https://api.thecatapi.com/v1/images/search', true);
+    
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            try {
+                const response = JSON.parse(xhr.responseText);
+                
+                if (response && response.length > 0 && response[0].url) {
+                    catImage.src = response[0].url;
+                    catImage.onload = function() {
+                        modalLoading.style.display = 'none';
+                        catImage.style.display = 'block';
+                    };
+                    catImage.onerror = function() {
+                        showModalError();
+                    };
+                } else {
+                    showModalError();
+                }
+            } catch (e) {
+                console.error('Erro ao processar imagem:', e);
+                showModalError();
+            }
+        } else {
+            showModalError();
+        }
+    };
+    
+    xhr.onerror = function() {
+        showModalError();
+    };
+    
+    xhr.send();
+}
+
+function showModalError() {
+    modalLoading.style.display = 'none';
+    catImage.style.display = 'none';
+    modalError.style.display = 'block';
+}
+
+function closeModalWindow() {
+    catModal.style.display = 'none';
+    catImage.src = '';
+}
+
+// Event listeners para fechar o modal
+closeModal.addEventListener('click', closeModalWindow);
+
+catModal.addEventListener('click', (e) => {
+    if (e.target === catModal) {
+        closeModalWindow();
+    }
+});
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && catModal.style.display === 'flex') {
+        closeModalWindow();
+    }
+});
 
 function loadCatFacts() {
     if (isLoading || !hasMorePages) return;

@@ -15,6 +15,24 @@
             Carregando mais fatos...
         </div>
     </div>
+
+    <!-- Modal -->
+    <div class="modal" id="catModal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeModal">&times;</span>
+            <div class="modal-body">
+                <div class="modal-loading" id="modalLoading">
+                    <div class="loading-spinner"></div>
+                    <p>Carregando foto do gatinho...</p>
+                </div>
+                <img id="catImage" class="cat-image" alt="Foto de gato" style="display: none;">
+                <div class="modal-error" id="modalError" style="display: none;">
+                    Ops! Não foi possível carregar a foto 😿
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
